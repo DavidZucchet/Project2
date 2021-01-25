@@ -15,8 +15,11 @@ For this project, I was interestested in using the data provides by Figure Eight
 
 # File Descriptions
 There is 3 folders containing the data, models and the app. 
+
 The Data folder contains 2 CSV files with the raw data. The python file "process_data.py" has the code for extract, transform, clean and load the data.
+
 The models folder contains a python file "train_classifier.py". When executing this code it splits the data into a training set and a test set. Then, it creates a machine learning pipeline that uses NLTK, as well as scikit-learn's Pipeline and RandomSearchCV (RandomizedSearchCV is used instead of GridSearchCV because sacrifice in precision and accuracy is not huge in relation to processing time and finding best parameters) to output a final model that uses the message column to predict classifications for 36 categories (multi-output classification). Finally, it exports the model to a pickle file.
+
 The app folder contains a python file "run.py" that use the database and the model, and generate a web app using flask that displays data visualization and classify messages. It also has a folder with 2 html files for generating the web app. 
 Comments were used to assist in walking through the thought process for individual steps.
 
