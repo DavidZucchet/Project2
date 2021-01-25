@@ -11,7 +11,7 @@
 There should be no necessary libraries to run the code here beyond the Anaconda distribution of Python. The code should run with no issues using Python versions 3.*.
 
 # Project Motivation
-For this project, I was interestested in using the data provides by Figure Eight to build a model for an API that classifies disastes messages and can send them to an appropriate disaster relief agency.
+For this project, I was interestested in using the data provided by Figure Eight to build a model for an API that classifies disaster messages and can send them to an appropriate disaster relief agency.
 
 # File Descriptions
 There is 3 folders containing the data, models and the app. 
