@@ -10,8 +10,8 @@ def load_data(messages_filepath, categories_filepath):
     # load categories dataset
     categories = pd.read_csv(categories_filepath)
     
-    return df,categories
-def clean_data(df,categories):
+    return messages,categories
+def clean_data(messages,categories):
     # merge datasets
     df = messages.merge(categories,on='id')
     # create a dataframe of the 36 individual category columns
@@ -50,10 +50,10 @@ def main():
 
         print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
               .format(messages_filepath, categories_filepath))
-        df,categories = load_data(messages_filepath, categories_filepath)
+        messages,categories = load_data(messages_filepath, categories_filepath)
 
         print('Cleaning data...')
-        df = clean_data(df,categories)
+        df = clean_data(messages,categories)
         
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
         save_data(df, database_filepath)
