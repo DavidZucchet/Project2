@@ -5,6 +5,15 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
+    #Returns the files loaded for ETL process.
+
+    #Parameters:
+    #    messages_filepath (str):The string with the filepath of the csv messages
+    #    categories_filepath (str):The string with the filepath of the csv categories
+    #Returns:
+    #    messages(df):  df with the messages 
+    #    categories(df):  df with the categories
+    
     # load messages dataset
     messages = pd.read_csv(messages_filepath)
     # load categories dataset
@@ -12,6 +21,14 @@ def load_data(messages_filepath, categories_filepath):
     
     return messages,categories
 def clean_data(messages,categories):
+    #Returns the df with the merge of two inputs and the Data transformed.
+
+    #Parameters:
+    #    messages(df):  df with the messages 
+    #    categories(df):  df with the categories
+    #Returns:
+    #    df: df merged with two inputs and cleaned. 
+    
     # merge datasets
     df = messages.merge(categories,on='id')
     # create a dataframe of the 36 individual category columns
@@ -28,7 +45,8 @@ def clean_data(messages,categories):
 
         # convert column from string to numeric
         categories[column] = pd.to_numeric(categories[column])
-    
+        # As "Related' field is more like "Indirectly Related", we convert 2 numbers as 1
+        categories[column] = categories[column].apply(lambda x: 1 if x==2 else x)    
     # drop the original categories column from `df`
     df=df.drop(['categories'],axis=1)
 
@@ -39,11 +57,25 @@ def clean_data(messages,categories):
     return df
 
 def save_data(df, database_filename):
+    
+    #Function that saves the data in a SQL database
+
+    #Parameters:
+    #    df(df):  df with the transformed base
+    #    database_filename(str1):  string with the filepath of the SQL base.
+
+    
     engine = create_engine('sqlite:///'+ database_filename)
     df.to_sql('Messages', engine, index=False,if_exists='replace')
 
 
 def main():
+    #Function that performs ETL process for the messages data
+
+    #Parameters:
+    #    messages_filepath(df):   string with the filepath of the csv messages
+    #    categories_filepath(str1):  string with the filepath of the csv categores
+    #    database_filepath(str1):  string with the filepath of the SQL base.
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]

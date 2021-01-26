@@ -20,6 +20,18 @@ nltk.download(['punkt', 'wordnet'])
 import pickle
 
 def load_data(database_filepath):
+
+    #Returns the variables loaded for model process.
+
+    #Parameters:
+    #    database_filepath(str1):  string with the filepath of the SQL base.
+    #Returns:
+    #    X(df):  df with the messages
+    #    y(df):  df with the 36 categories
+    #    category_names(df):  df with columns names of the df
+
+    # load messages dataset    
+    
     # load data from database
     engine = create_engine('sqlite:///'+database_filepath)
     df = pd.read_sql_table("Messages", engine)
@@ -28,6 +40,15 @@ def load_data(database_filepath):
     return X, y, df.columns
 
 def tokenize(text):
+    
+    #tokenization function to process and return text data
+
+    #Parameters:
+    #    text(str):  string text
+    #Returns:
+    #    clean_tokens(str):  string after tokenize applying lemmatizer, lower text and strip.
+
+    
     #tokenization function to process your text data
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
@@ -40,6 +61,12 @@ def tokenize(text):
 
 
 def build_model():
+    
+    #Returns a model applying pipeline with countvectorizer,tfidtransformer and multioutputclassifier with random forest. Also optimize parameters after using GridSearchCV
+
+    #Returns:
+    #    cv: model for fitting and predicting in next steps.
+    
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -50,11 +77,20 @@ def build_model():
         'tfidf__use_idf': (True, False),
         'clf__estimator__min_samples_split': [2, 3,4]
     }
-    # RandomizedSearchCV is used instead of GridSearchCV because sacrifice in precision and accuracy is not huge in relation to processing time and finding best parameters
-    cv = RandomizedSearchCV(pipeline, param_distributions=parameters,n_jobs= -1)
-    
+
+    cv = GridSearchCV(pipeline, param_grid=parameters)
+
     return cv
+
 def evaluate_model(model, X_test, Y_test, category_names):
+
+    #function that evaluates a model with the testing data
+
+    #Parameters:
+    #    model:  model returned of the build_model function
+    #    X(df):  df with the test messages
+    #    y(df):  df with the test 36 categories
+    #    category_names(df):  df with columns names of the df
     
     y_pred = model.predict(X_test)
     for i in range(y_pred.shape[1]):
@@ -62,9 +98,25 @@ def evaluate_model(model, X_test, Y_test, category_names):
         print(classification_report(Y_test[:,i],y_pred[:,i]))
 
 def save_model(model, model_filepath):
+    
+    #function that saves the model as a pickle file
+
+    #Parameters:
+    #    model:  model returned of the evaluate_model function
+    #    model_filepath(str):  string with the filepath of the pickle file
+
+    #Returns:
+    #    model as a pickle file.
+    
     pickle.dump(model.best_estimator_, open(model_filepath, 'wb'))
 
 def main():
+    #Function that performs model process for the messages data
+
+    #Parameters:
+    #    database_filepath(str1):  string with the filepath of the SQL base.
+    #    model_filepath(str):  string with the filepath of the pickle file    
+    
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
